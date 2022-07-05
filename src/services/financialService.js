@@ -1,5 +1,4 @@
-import jwt from "jsonwebtoken";
-import connection from "./database.js";
+import connection from "../database.js";
 
 async function handleFinancialTypes(user, value, type) {
   if (!value || !type) {

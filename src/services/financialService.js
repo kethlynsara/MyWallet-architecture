@@ -1,4 +1,4 @@
-import connection from "../database.js";
+import { financialRepository } from "../repositories/financialRepository.js";
 
 async function handleFinancialTypes(user, value, type) {
   if (!value || !type) {
@@ -23,26 +23,17 @@ async function handleFinancialTypes(user, value, type) {
     };
   }
 
-  await connection.query(
-    `INSERT INTO "financialEvents" ("userId", "value", "type") VALUES ($1, $2, $3)`,
-    [user.id, value, type]
-  );
+  await financialRepository.insert(user, value, type);
 }
 
 async function getFinancialEvent(user) {
-    const events = await connection.query(
-        `SELECT * FROM "financialEvents" WHERE "userId"=$1 ORDER BY "id" DESC`,
-        [user.id]
-    );
+    const events = await financialRepository.select("userId", user);
     return events;
 }
 
 async function getFinancialEventSum(user) {
-    const events = await connection.query(
-        `SELECT * FROM "financialEvents" WHERE "userId"=$1 ORDER BY "id" DESC`,
-        [user.id]
-      );
-  
+    const events = await financialRepository.select("userId", user);
+
     const sum = events.rows.reduce(
         (total, event) =>
           event.type === "INCOME" ? total + event.value : total - event.value,
